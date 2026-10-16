@@ -1,0 +1,7 @@
+.*
+!.github
+!.dockerignore
+!.gitignore
+!.hadolint.yaml
+!.yamllint.yaml
+!.yamllintignore

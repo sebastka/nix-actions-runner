@@ -1,0 +1,6 @@
+---
+# Repo-wide policy only. Anything that applies to a single instruction is scoped
+# there with a "# hadolint ignore=" comment instead, so a genuinely new finding
+# elsewhere in the file still fails.
+
+failure-threshold: info

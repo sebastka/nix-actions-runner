@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigests"],
+  "customManagers": [
+    {
+      "description": "nixpkgs commit the Attic client comes from: the nixos-unstable head",
+      "customType": "regex",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG NIXPKGS_REV=(?<currentDigest>[0-9a-f]{40})"],
+      "datasourceTemplate": "git-refs",
+      "depNameTemplate": "nixpkgs",
+      "packageNameTemplate": "https://github.com/NixOS/nixpkgs",
+      "currentValueTemplate": "nixos-unstable"
+    },
+    {
+      "description": "Nix release. NIX_SHA256 is not updated: fixed by hand in the pull request",
+      "customType": "regex",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG NIX_VERSION=(?<currentValue>\\S+)"],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "NixOS/nix"
+    },
+    {
+      "description": "yamllint, run by the lint job (pipx run yamllint==<version>)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": ["pipx run (?<depName>yamllint)==(?<currentValue>[0-9.]+)"],
+      "datasourceTemplate": "pypi"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "The daily nixos-unstable bump: merged by Renovate once the build passed (not GitHub's auto-merge, which would merge before CI without required checks)",
+      "matchDepNames": ["nixpkgs"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": false
+    },
+    {
+      "matchDepNames": ["NixOS/nix"],
+      "prBodyNotes": [
+        "⚠️ `NIX_SHA256` is not updated by Renovate, and the build fails until it is: take it from https://nixos.org/nix/install (or `curl -fsSL https://releases.nixos.org/nix/nix-{{{newVersion}}}/nix-{{{newVersion}}}-x86_64-linux.tar.xz | sha256sum`) and push it to this branch."
+      ]
+    }
+  ]
+}
