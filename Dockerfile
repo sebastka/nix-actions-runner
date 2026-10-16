@@ -18,7 +18,9 @@ ARG NIXPKGS_REV=55bfb4d7437bd4e09ab7cba58a43bd68eb310044
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # xz for Nix's tarball. /nix and /etc/nix created for the runner user, the only one using Nix.
-USER root
+# Users by id (root 0, runner 1001 in the base image): Kubernetes' runAsNonRoot can only check a numeric USER. No
+# group for the runner: its supplementary ones (docker, for ARC's dind mode) then still come from /etc/group.
+USER 0
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends xz-utils \
@@ -26,7 +28,7 @@ RUN apt-get update \
     && install -d -m 0755 -o runner -g runner /nix /etc/nix
 COPY nix.conf /etc/nix/nix.conf
 
-USER runner
+USER 1001
 WORKDIR /home/runner
 
 RUN curl -fsSL -o /tmp/nix.tar.xz "https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz" \
