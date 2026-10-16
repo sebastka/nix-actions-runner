@@ -48,7 +48,7 @@ steps:
 All by Renovate (`renovate.json`):
 
 - Base image and actions: tags and digests.
-- Attic client: `NIXPKGS_REV`, the nixos-unstable head, daily. Merged by Renovate itself once the build passed.
+- Attic client: `NIXPKGS_REV`, the nixos-unstable head, daily. Auto-merged once the required checks (`lint`, `build`) passed.
 - yamllint: the version the lint job pins.
 - Nix: `NIX_VERSION` only. Renovate cannot compute `NIX_SHA256`, so its pull request fails the build until the
   tarball's hash (from https://nixos.org/nix/install) is pushed to it by hand.

@@ -30,11 +30,10 @@
   ],
   "packageRules": [
     {
-      "description": "The daily nixos-unstable bump: merged by Renovate once the build passed (not GitHub's auto-merge, which would merge before CI without required checks)",
+      "description": "The daily nixos-unstable bump: merged by GitHub's auto-merge once the required checks (lint, build: master ruleset) passed",
       "matchDepNames": ["nixpkgs"],
       "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": false
+      "automergeType": "pr"
     },
     {
       "matchDepNames": ["NixOS/nix"],
