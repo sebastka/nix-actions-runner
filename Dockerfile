@@ -3,14 +3,18 @@
 # GitHub Actions runner with Nix, for ARC (Actions Runner Controller) runner scale sets: GitHub's runner image (its
 # layout, /home/runner/run.sh, is what ARC starts), with
 # - Nix, single-user: /nix owned by the runner user, no daemon, nothing running as root
-# - the Attic client (attic), to push to our binary cache
-# x86_64 only.
+# - the Attic client (attic), to push to an Attic binary cache
+# For linux/amd64 and linux/arm64.
 FROM ghcr.io/actions/actions-runner:2.338.0@sha256:4ffadc0002b2581327e06101fc8c06cd189232baf79fe561fac9caeb76f5e807
 
-# Nix release: version and its tarball's SHA-256, both from https://nixos.org/nix/install. NIX_VERSION bumped by
-# Renovate, NIX_SHA256 by hand in its pull request (the build fails until then).
+# Nix release: version and its tarballs' SHA-256 (one per architecture), all from
+# https://releases.nixos.org/nix/nix-<version>/install. NIX_VERSION bumped by Renovate, the hashes by hand in its pull
+# request (the build fails until then).
 ARG NIX_VERSION=2.35.3
-ARG NIX_SHA256=6ce3ce3703fdc241b560cba401c5d338042122fe5b1a81e07bf1a623f259eba0
+ARG NIX_SHA256_AMD64=6ce3ce3703fdc241b560cba401c5d338042122fe5b1a81e07bf1a623f259eba0
+ARG NIX_SHA256_ARM64=4a770896faa4d308806d0b4516575e0581443dc817d634b951a219a280554c09
+# Set by BuildKit: amd64 or arm64
+ARG TARGETARCH
 # nixpkgs commit the Attic client comes from: the nixos-unstable head (bumped by Renovate), already built on
 # cache.nixos.org
 ARG NIXPKGS_REV=55bfb4d7437bd4e09ab7cba58a43bd68eb310044
@@ -31,8 +35,13 @@ COPY nix.conf /etc/nix/nix.conf
 USER 1001
 WORKDIR /home/runner
 
-RUN curl -fsSL -o /tmp/nix.tar.xz "https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz" \
-    && echo "${NIX_SHA256}  /tmp/nix.tar.xz" | sha256sum -c - \
+RUN case "${TARGETARCH}" in \
+        amd64) system=x86_64-linux sha256="${NIX_SHA256_AMD64}" ;; \
+        arm64) system=aarch64-linux sha256="${NIX_SHA256_ARM64}" ;; \
+        *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && curl -fsSL -o /tmp/nix.tar.xz "https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-${system}.tar.xz" \
+    && echo "${sha256}  /tmp/nix.tar.xz" | sha256sum -c - \
     && mkdir /tmp/nix \
     && tar -xJf /tmp/nix.tar.xz -C /tmp/nix --strip-components=1 \
     && /tmp/nix/install --no-daemon --no-channel-add --no-modify-profile \

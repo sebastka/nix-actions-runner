@@ -13,7 +13,7 @@
       "currentValueTemplate": "nixos-unstable"
     },
     {
-      "description": "Nix release. NIX_SHA256 is not updated: fixed by hand in the pull request",
+      "description": "Nix release. NIX_SHA256_AMD64 and NIX_SHA256_ARM64 are not updated: fixed by hand in the pull request",
       "customType": "regex",
       "managerFilePatterns": ["/^Dockerfile$/"],
       "matchStrings": ["ARG NIX_VERSION=(?<currentValue>\\S+)"],
@@ -30,7 +30,7 @@
   ],
   "packageRules": [
     {
-      "description": "The daily nixos-unstable bump: merged by GitHub's auto-merge once the required checks (lint, build: master ruleset) passed",
+      "description": "The daily nixos-unstable bump: merged by GitHub's auto-merge once the required checks (lint, build (amd64), build (arm64): master ruleset) passed",
       "matchDepNames": ["nixpkgs"],
       "automerge": true,
       "automergeType": "pr"
@@ -38,7 +38,7 @@
     {
       "matchDepNames": ["NixOS/nix"],
       "prBodyNotes": [
-        "⚠️ `NIX_SHA256` is not updated by Renovate, and the build fails until it is: take it from https://nixos.org/nix/install (or `curl -fsSL https://releases.nixos.org/nix/nix-{{{newVersion}}}/nix-{{{newVersion}}}-x86_64-linux.tar.xz | sha256sum`) and push it to this branch."
+        "⚠️ `NIX_SHA256_AMD64` and `NIX_SHA256_ARM64` are not updated by Renovate, and the build fails until they are: take the `x86_64-linux` and `aarch64-linux` hashes from https://releases.nixos.org/nix/nix-{{{newVersion}}}/install (`curl -fsSL https://releases.nixos.org/nix/nix-{{{newVersion}}}/install | grep -B1 -E 'nix-{{{newVersion}}}-(x86_64|aarch64)-linux'`) and push them to this branch."
       ]
     }
   ]

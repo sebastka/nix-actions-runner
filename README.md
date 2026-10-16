@@ -4,11 +4,11 @@ GitHub Actions runner image with Nix, for [ARC](https://github.com/actions/actio
 sets: [GitHub's runner image](https://github.com/actions/runner/pkgs/container/actions-runner), with
 
 - **Nix**, single-user: `/nix` owned by the `runner` user, no daemon, nothing running as root. Builds run without
-  Nix's sandbox (`sandbox = false`, `nix.conf`): the pod has no privileges to create its namespaces.
-- **The Attic client** (`attic`), to push to our binary cache (sebastka/homelab: `k8s/applications/utils/attic`).
+  Nix's sandbox (`sandbox = false`, `nix.conf`): an unprivileged pod cannot create its namespaces.
+- **The [Attic](https://github.com/zhaofengli/attic) client** (`attic`), to push to an Attic binary cache.
 
-x86_64 only. Published as `ghcr.io/sebastka/nix-actions-runner` (`latest`, and `sha-<commit>`) from `master`, with
-SLSA provenance and SBOM attestations, and a keyless cosign signature:
+For `linux/amd64` and `linux/arm64`. Published as `ghcr.io/sebastka/nix-actions-runner` (`latest`, and
+`sha-<commit>`) from `master`, with SLSA provenance and SBOM attestations, and a keyless cosign signature:
 
 ```sh
 cosign verify ghcr.io/sebastka/nix-actions-runner:latest \
@@ -18,29 +18,45 @@ cosign verify ghcr.io/sebastka/nix-actions-runner:latest \
 
 ## Use
 
-Only for trusted workflows: never on `pull_request` (a fork's code would run in the cluster).
+Only for trusted workflows: never on `pull_request` from forks (a fork's code would run in your cluster, without
+Nix's sandbox).
 
-Our cache (`pithos`, private: reads need a token too), from the workflow, with a push token as the secret
-`ATTIC_TOKEN`:
+In the runner scale set's values (`gha-runner-scale-set` chart), the image replaces GitHub's. The runner runs as uid
+1001, so `runAsNonRoot` works:
+
+```yaml
+template:
+  spec:
+    containers:
+      - name: runner
+        image: ghcr.io/sebastka/nix-actions-runner:latest
+        command: ["/home/runner/run.sh"]
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+```
+
+Only cache.nixos.org is configured. Other caches from the workflow, with `NIX_CONFIG`; for an Attic cache, with a
+token as the secret `ATTIC_TOKEN`:
 
 ```yaml
 env:
   NIX_CONFIG: |
-    extra-substituters = https://attic.karlsen.app/pithos
-    extra-trusted-public-keys = pithos:pir3vRe6RpQrNmkwB6M0F/ydWPDgQqe5v6mABkmCpYc=
-    netrc-file = ${{ runner.temp }}/netrc
+    extra-substituters = https://cache.example.com/<cache>
+    extra-trusted-public-keys = <cache>:<public key>
+    netrc-file = ${{ runner.temp }}/netrc  # Private cache only: reads need the token too
 steps:
-  # Reads (Nix): the token in a netrc file, outside the workspace
+  # Reads (Nix), private cache only: the token in a netrc file, outside the workspace
   - run: |
       install -m 600 /dev/null "${RUNNER_TEMP}/netrc"
-      printf 'machine attic.karlsen.app\npassword %s\n' "${ATTIC_TOKEN}" > "${RUNNER_TEMP}/netrc"
+      printf 'machine cache.example.com\npassword %s\n' "${ATTIC_TOKEN}" > "${RUNNER_TEMP}/netrc"
     env:
       ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
   # Pushes (attic)
-  - run: attic login karlsen https://attic.karlsen.app "${ATTIC_TOKEN}"
+  - run: attic login example https://cache.example.com "${ATTIC_TOKEN}"
     env:
       ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-  - run: attic push karlsen:pithos ./result
+  - run: attic push example:<cache> ./result
 ```
 
 ## Updates
@@ -48,10 +64,12 @@ steps:
 All by Renovate (`renovate.json`):
 
 - Base image and actions: tags and digests.
-- Attic client: `NIXPKGS_REV`, the nixos-unstable head, daily. Auto-merged once the required checks (`lint`, `build`) passed.
+- Attic client: `NIXPKGS_REV`, the nixos-unstable head, daily. Auto-merged once the required checks (`lint`,
+  `build (amd64)`, `build (arm64)`) passed.
 - yamllint: the version the lint job pins.
-- Nix: `NIX_VERSION` only. Renovate cannot compute `NIX_SHA256`, so its pull request fails the build until the
-  tarball's hash (from https://nixos.org/nix/install) is pushed to it by hand.
+- Nix: `NIX_VERSION` only. Renovate cannot compute `NIX_SHA256_AMD64` and `NIX_SHA256_ARM64`, so its pull request
+  fails the build until the tarballs' hashes (from `https://releases.nixos.org/nix/nix-<version>/install`) are pushed
+  to it by hand.
 
 ## License
 
