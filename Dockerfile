@@ -10,7 +10,7 @@ FROM ghcr.io/actions/actions-runner:2.338.0@sha256:4ffadc0002b2581327e06101fc8c0
 # Nix release: version and its tarballs' SHA-256 (one per architecture), all from
 # https://releases.nixos.org/nix/nix-<version>/install. NIX_VERSION bumped by Renovate, the hashes by hand in its pull
 # request (the build fails until then).
-ARG NIX_VERSION=2.35.3
+ARG NIX_VERSION=2.35.4
 ARG NIX_SHA256_AMD64=6ce3ce3703fdc241b560cba401c5d338042122fe5b1a81e07bf1a623f259eba0
 ARG NIX_SHA256_ARM64=4a770896faa4d308806d0b4516575e0581443dc817d634b951a219a280554c09
 # Set by BuildKit: amd64 or arm64
