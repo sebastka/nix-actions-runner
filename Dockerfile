@@ -17,7 +17,7 @@ ARG NIX_SHA256_ARM64=4a770896faa4d308806d0b4516575e0581443dc817d634b951a219a2805
 ARG TARGETARCH
 # nixpkgs commit the Attic client comes from: the nixos-unstable head (bumped by Renovate), already built on
 # cache.nixos.org
-ARG NIXPKGS_REV=02c087f3fe673c9e317f206a627cb6b910336dbe
+ARG NIXPKGS_REV=3ec636362e1816bc2f0888fa0fa2c69f1bc9e504
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
