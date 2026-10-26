@@ -10,9 +10,9 @@ FROM ghcr.io/actions/actions-runner:2.338.1@sha256:e275409999c37162649aa050ca573
 # Nix release: version and its tarballs' SHA-256 (one per architecture), all from
 # https://releases.nixos.org/nix/nix-<version>/install. NIX_VERSION bumped by Renovate, the hashes by hand in its pull
 # request (the build fails until then).
-ARG NIX_VERSION=2.35.3
-ARG NIX_SHA256_AMD64=6ce3ce3703fdc241b560cba401c5d338042122fe5b1a81e07bf1a623f259eba0
-ARG NIX_SHA256_ARM64=4a770896faa4d308806d0b4516575e0581443dc817d634b951a219a280554c09
+ARG NIX_VERSION=2.35.4
+ARG NIX_SHA256_AMD64=ff66236d2f7e2a21f3350e73668e021ac6a8881ef277a38e16e952bfb22718c3
+ARG NIX_SHA256_ARM64=14a940a2d0ae5b2c623dc2ca168311c9367fd4bc416f6ded0c1087089d6de934
 # Set by BuildKit: amd64 or arm64
 ARG TARGETARCH
 # nixpkgs commit the Attic client comes from: the nixos-unstable head (bumped by Renovate), already built on
