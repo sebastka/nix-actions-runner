@@ -14,7 +14,7 @@ RUN nix="$(dirname "$(dirname "$(readlink -f /root/.nix-profile/bin/nix)")")" \
     && nix --extra-experimental-features nix-command copy --no-check-sigs --to /out "${nix}" \
     && echo "${nix}" > /out/nix-path
 
-FROM ghcr.io/actions/actions-runner:2.338.1@sha256:e275409999c37162649aa050ca573f03eab2eabcb3a1e7fcc47548de6b4f9690
+FROM ghcr.io/actions/actions-runner:2.338.2@sha256:759a1d94a15b05941aba5196974ff43fe15b4cbba29b694b35cbc32a1166b232
 
 # nixpkgs commit the Attic client comes from: the nixos-unstable head (bumped by Renovate), already built on
 # cache.nixos.org
