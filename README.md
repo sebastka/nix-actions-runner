@@ -4,7 +4,8 @@ GitHub Actions runner image with Nix, for [ARC](https://github.com/actions/actio
 sets: [GitHub's runner image](https://github.com/actions/runner/pkgs/container/actions-runner), with
 
 - **Nix**, single-user: `/nix` owned by the `runner` user, no daemon, nothing running as root. Builds run without
-  Nix's sandbox (`sandbox = false`, `nix.conf`): an unprivileged pod cannot create its namespaces.
+  Nix's sandbox (`sandbox = false`, `nix.conf`): an unprivileged pod cannot create its namespaces. They build in the
+  container's `/tmp` (`build-dir`), not under `/nix`, which may be a persistent volume.
 - **The [Attic](https://github.com/zhaofengli/attic) client** (`attic`), to push to an Attic binary cache.
 
 For `linux/amd64` and `linux/arm64`. Published as `ghcr.io/sebastka/nix-actions-runner` (`latest`, and
