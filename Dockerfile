@@ -5,7 +5,7 @@
 # - Nix, single-user: /nix owned by the runner user, no daemon, nothing running as root
 # - the Attic client (attic), to push to an Attic binary cache
 # For linux/amd64 and linux/arm64.
-FROM ghcr.io/actions/actions-runner:2.338.1@sha256:e275409999c37162649aa050ca573f03eab2eabcb3a1e7fcc47548de6b4f9690
+FROM ghcr.io/actions/actions-runner:2.338.2@sha256:759a1d94a15b05941aba5196974ff43fe15b4cbba29b694b35cbc32a1166b232
 
 # Nix release: version and its tarballs' SHA-256 (one per architecture), all from
 # https://releases.nixos.org/nix/nix-<version>/install. NIX_VERSION bumped by Renovate, the hashes by hand in its pull
