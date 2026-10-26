@@ -30,8 +30,8 @@
   ],
   "packageRules": [
     {
-      "description": "The daily nixos-unstable bump: merged by GitHub's auto-merge once the required checks (lint, build (amd64), build (arm64): master ruleset) passed",
-      "matchDepNames": ["nixpkgs"],
+      "description": "Everything but majors (actions, base image, the daily nixos-unstable bump, Nix once its hashes are pushed, yamllint): merged by GitHub's auto-merge once the required checks (lint, build (amd64), build (arm64): master ruleset) passed",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
       "automerge": true,
       "automergeType": "pr"
     },
