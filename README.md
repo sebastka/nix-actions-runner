@@ -65,12 +65,10 @@ steps:
 All by Renovate (`renovate.json`). Everything but major versions is auto-merged once the required checks (`lint`,
 `build (amd64)`, `build (arm64)`) passed.
 
-- Base image and actions: tags and digests.
+- Base image, Nix (its official image, `ghcr.io/nixos/nix`, of which only Nix's own closure is copied) and actions:
+  tags and digests.
 - Attic client: `NIXPKGS_REV`, the nixos-unstable head, daily.
 - yamllint: the version the lint job pins.
-- Nix: `NIX_VERSION` only. Renovate cannot compute `NIX_SHA256_AMD64` and `NIX_SHA256_ARM64`, so its pull request
-  fails the build until the tarballs' hashes (from `https://releases.nixos.org/nix/nix-<version>/install`) are pushed
-  to it by hand.
 
 ## License
 

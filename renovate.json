@@ -13,14 +13,6 @@
       "currentValueTemplate": "nixos-unstable"
     },
     {
-      "description": "Nix release. NIX_SHA256_AMD64 and NIX_SHA256_ARM64 are not updated: fixed by hand in the pull request",
-      "customType": "regex",
-      "managerFilePatterns": ["/^Dockerfile$/"],
-      "matchStrings": ["ARG NIX_VERSION=(?<currentValue>\\S+)"],
-      "datasourceTemplate": "github-tags",
-      "depNameTemplate": "NixOS/nix"
-    },
-    {
       "description": "yamllint, run by the lint job (pipx run yamllint==<version>)",
       "customType": "regex",
       "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
@@ -30,16 +22,10 @@
   ],
   "packageRules": [
     {
-      "description": "Everything but majors (actions, base image, the daily nixos-unstable bump, Nix once its hashes are pushed, yamllint): merged by GitHub's auto-merge once the required checks (lint, build (amd64), build (arm64): master ruleset) passed",
+      "description": "Everything but majors (actions, base image, Nix's image, the daily nixos-unstable bump, yamllint): merged by GitHub's auto-merge once the required checks (lint, build (amd64), build (arm64): master ruleset) passed",
       "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
       "automerge": true,
       "automergeType": "pr"
-    },
-    {
-      "matchDepNames": ["NixOS/nix"],
-      "prBodyNotes": [
-        "⚠️ `NIX_SHA256_AMD64` and `NIX_SHA256_ARM64` are not updated by Renovate, and the build fails until they are: take the `x86_64-linux` and `aarch64-linux` hashes from https://releases.nixos.org/nix/nix-{{{newVersion}}}/install (`curl -fsSL https://releases.nixos.org/nix/nix-{{{newVersion}}}/install | grep -B1 -E 'nix-{{{newVersion}}}-(x86_64|aarch64)-linux'`) and push them to this branch."
-      ]
     }
   ]
 }
