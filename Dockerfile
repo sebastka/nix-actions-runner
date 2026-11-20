@@ -9,7 +9,7 @@
 # Nix itself: its official image (multi-architecture), pinned by tag and digest, bumped by Renovate like the base image.
 # Only Nix's own closure is taken, not the image's whole base system: copied into a store of its own under /out (/out/nix,
 # with its database), and its path written down for the runner stage.
-FROM ghcr.io/nixos/nix:2.35.6@sha256:b49cb33f3a7e5cf3933ad8774529de0e3807ec5cf54987aa7ccdfb49f2fc55ed AS nix
+FROM ghcr.io/nixos/nix:2.36.0@sha256:746280551ddc1c72177d1a597c05eacac86dfaa18d5d649bf86411278bcd5470 AS nix
 RUN nix="$(dirname "$(dirname "$(readlink -f /root/.nix-profile/bin/nix)")")" \
     && nix --extra-experimental-features nix-command copy --no-check-sigs --to /out "${nix}" \
     && echo "${nix}" > /out/nix-path
