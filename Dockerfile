@@ -18,7 +18,7 @@ FROM ghcr.io/actions/actions-runner:2.338.2@sha256:6d0b2d80d80f143f77dcb676e5092
 
 # nixpkgs commit the Attic client comes from: the nixos-unstable head (bumped by Renovate), already built on
 # cache.nixos.org
-ARG NIXPKGS_REV=0bb8272318b4ca41bf0edc6224df3e3e3046b70d
+ARG NIXPKGS_REV=2786a2a72088ecf32aea5b3ec52099e6a7cff78f
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
